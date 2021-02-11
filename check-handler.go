@@ -6,10 +6,10 @@ import (
 
 	"net/http"
 
-	"consul-alerts/notifier"
+	"github.com/muresan/consul-alerts/notifier"
 
-	log "github.com/Sirupsen/logrus"
 	consulapi "github.com/hashicorp/consul/api"
+	log "github.com/sirupsen/logrus"
 )
 
 type CheckProcessor struct {

@@ -10,10 +10,10 @@ import (
 
 	"encoding/json"
 
-	notifier "consul-alerts/notifier"
+	notifier "github.com/muresan/consul-alerts/notifier"
 
-	log "github.com/Sirupsen/logrus"
 	consulapi "github.com/hashicorp/consul/api"
+	log "github.com/sirupsen/logrus"
 )
 
 const (

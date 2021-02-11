@@ -3,8 +3,8 @@ package consul
 import (
 	"time"
 
-	notifier "consul-alerts/notifier"
 	consulapi "github.com/hashicorp/consul/api"
+	notifier "github.com/muresan/consul-alerts/notifier"
 )
 
 type Check consulapi.HealthCheck

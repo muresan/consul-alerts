@@ -1,8 +1,8 @@
 package notifier
 
 import (
-	"consul-alerts/notifier/influxdb-client"
-	log "github.com/Sirupsen/logrus"
+	"github.com/muresan/consul-alerts/notifier/influxdb-client"
+	log "github.com/sirupsen/logrus"
 )
 
 type InfluxdbNotifier struct {

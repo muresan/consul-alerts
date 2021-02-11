@@ -13,11 +13,11 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"consul-alerts/consul"
-	"consul-alerts/notifier"
+	"github.com/muresan/consul-alerts/consul"
+	"github.com/muresan/consul-alerts/notifier"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/docopt/docopt-go"
+	log "github.com/sirupsen/logrus"
 )
 
 const version = "Consul Alerts 0.5.0"
