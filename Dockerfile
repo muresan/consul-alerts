@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM alpine:edge as build
 
 ENV GOPATH /go
 
@@ -12,6 +12,12 @@ RUN mkdir -p /go && \
     rm -rf /go && \
     apk del --purge go git alpine-sdk && \
     rm -rf /var/cache/apk/*
+
+FROM alpine:edge
+
+RUN apk update && apk add bash ca-certificates
+
+COPY --from=build /bin/consul-alerts /bin/consul /bin/
 
 EXPOSE 9000
 CMD []
