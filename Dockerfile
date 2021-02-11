@@ -1,12 +1,11 @@
 FROM alpine:edge
-MAINTAINER Acaleph <admin@acale.ph>
 
 ENV GOPATH /go
 
 RUN mkdir -p /go && \
     apk update && \
     apk add bash ca-certificates git go alpine-sdk && \
-    go get -v github.com/AcalephStorage/consul-alerts && \
+    go get -v github.com/muresan/consul-alerts && \
     mv /go/bin/consul-alerts /bin && \
     go get -v github.com/hashicorp/consul && \
     mv /go/bin/consul /bin && \

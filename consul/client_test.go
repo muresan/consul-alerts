@@ -6,11 +6,11 @@ import (
 	"reflect"
 	"testing"
 
-	consulapi "github.com/AcalephStorage/consul-alerts/Godeps/_workspace/src/github.com/hashicorp/consul/api"
+	consulapi "github.com/hashicorp/consul/api"
 )
 
 func testClient() (*ConsulAlertClient, error) {
-	return NewClient("192.168.10.10:8500", "dc1", "")
+	return NewClient("127.0.0.1:8500", "dc1", "")
 }
 
 func clearKVPath(t *testing.T, c *ConsulAlertClient, path string) {
@@ -189,7 +189,7 @@ func TestIsBlacklisted(t *testing.T) {
 	node := "test-node"
 	checkID := "test-check"
 	serviceID := "test-service"
-	check := Check{Node: node, CheckID: checkID, ServiceID: serviceID}
+	check := consulapi.HealthCheck{Node: node, CheckID: checkID, ServiceID: serviceID}
 	isBlackListed := client.IsBlacklisted(&check)
 	if isBlackListed {
 		t.Error("isBlackListed should be false if there is no corresponding entry in the blacklist")
@@ -248,7 +248,7 @@ func TestIndividualChangeThreshold(t *testing.T) {
 	}
 	clearKVPath(t, client, "consul-alerts/config/checks/")
 
-	check := &Check{
+	check := &consulapi.HealthCheck{
 		Node:        "test-node",
 		CheckID:     "check-id",
 		Name:        "check-name",

@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"os/exec"
 
-	log "github.com/AcalephStorage/consul-alerts/Godeps/_workspace/src/github.com/Sirupsen/logrus"
-	"github.com/AcalephStorage/consul-alerts/Godeps/_workspace/src/github.com/imdario/mergo"
-	"github.com/AcalephStorage/consul-alerts/Godeps/_workspace/src/github.com/mitchellh/hashstructure"
+	log "github.com/Sirupsen/logrus"
+	"github.com/imdario/mergo"
+	"github.com/mitchellh/hashstructure"
 
-	"github.com/AcalephStorage/consul-alerts/notifier"
+	"consul-alerts/notifier"
 )
 
 // NotifEngine handles notifications.
@@ -61,7 +61,7 @@ func (n *NotifEngine) sendBuiltin(messages notifier.Messages) {
 		// if notification list is empty -> notify by all the enabled notifiers
 		if len(m.NotifList) == 0 {
 			for _, notifier := range defaultNotifiers {
-				hash, err = hashstructure.Hash(notifier, nil)
+				hash, err = hashstructure.Hash(notifier, hashstructure.FormatV2, nil)
 				if err != nil {
 					log.Error(err)
 				}
@@ -81,7 +81,7 @@ func (n *NotifEngine) sendBuiltin(messages notifier.Messages) {
 					}
 				}
 
-				hash, err = hashstructure.Hash(notif, nil)
+				hash, err = hashstructure.Hash(notif, hashstructure.FormatV2, nil)
 				if err != nil {
 					log.Error(err)
 				}

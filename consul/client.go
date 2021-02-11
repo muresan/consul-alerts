@@ -10,10 +10,10 @@ import (
 
 	"encoding/json"
 
-	notifier "github.com/AcalephStorage/consul-alerts/notifier"
+	notifier "consul-alerts/notifier"
 
-	log "github.com/AcalephStorage/consul-alerts/Godeps/_workspace/src/github.com/Sirupsen/logrus"
-	consulapi "github.com/AcalephStorage/consul-alerts/Godeps/_workspace/src/github.com/hashicorp/consul/api"
+	log "github.com/Sirupsen/logrus"
+	consulapi "github.com/hashicorp/consul/api"
 )
 
 const (
@@ -372,7 +372,7 @@ func (c *ConsulAlertClient) UpdateCheckData() {
 		status, _, _ := kvApi.Get(key, nil)
 		existing := status != nil
 
-		localHealth := Check(*health)
+		localHealth := consulapi.HealthCheck(*health)
 
 		if c.IsBlacklisted(&localHealth) {
 			log.Printf("%s:%s:%s is blacklisted.", node, service, check)
@@ -446,9 +446,9 @@ func (c *ConsulAlertClient) DeleteReminder(node string, checkid string) {
 }
 
 // NewAlerts returns a list of checks marked for notification
-func (c *ConsulAlertClient) NewAlerts() []Check {
+func (c *ConsulAlertClient) NewAlerts() []consulapi.HealthCheck {
 	allChecks, _, _ := c.api.KV().List("consul-alerts/checks", nil)
-	var alerts []Check
+	var alerts []consulapi.HealthCheck
 	for _, kvpair := range allChecks {
 		key := kvpair.Key
 		if strings.HasSuffix(key, "/") {
@@ -487,9 +487,9 @@ func (c *ConsulAlertClient) CustomNotifiers() (customNotifs map[string]string) {
 	return customNotifs
 }
 
-func (c *ConsulAlertClient) NewAlertsWithFilter(nodeName string, serviceName string, checkName string, statuses []string, ignoreBlacklist bool) []Check {
+func (c *ConsulAlertClient) NewAlertsWithFilter(nodeName string, serviceName string, checkName string, statuses []string, ignoreBlacklist bool) []consulapi.HealthCheck {
 	allChecks, _, _ := c.api.KV().List("consul-alerts/checks", nil)
-	alerts := make([]Check, 0)
+	alerts := make([]consulapi.HealthCheck, 0)
 	for _, kvpair := range allChecks {
 		if strings.HasSuffix(kvpair.Key, "/") {
 			continue
@@ -586,7 +586,7 @@ func (c *ConsulAlertClient) ILertNotifier() *notifier.ILertNotifier {
 	return c.config.Notifiers.ILert
 }
 
-func (c *ConsulAlertClient) registerHealthCheck(key string, health *Check) {
+func (c *ConsulAlertClient) registerHealthCheck(key string, health *consulapi.HealthCheck) {
 
 	log.Printf(
 		"Registering new health check: node=%s, service=%s, check=%s, status=%s",
@@ -615,7 +615,7 @@ func (c *ConsulAlertClient) registerHealthCheck(key string, health *Check) {
 	c.api.KV().Put(&consulapi.KVPair{Key: key, Value: statusData}, nil)
 }
 
-func (c *ConsulAlertClient) updateHealthCheck(key string, health *Check) {
+func (c *ConsulAlertClient) updateHealthCheck(key string, health *consulapi.HealthCheck) {
 
 	kvpair, _, _ := c.api.KV().Get(key, nil)
 	val := kvpair.Value
@@ -823,7 +823,7 @@ func (c *ConsulAlertClient) GetProfileInfo(node, serviceID, checkID, status stri
 }
 
 // IsBlacklisted gets the blacklist status of check
-func (c *ConsulAlertClient) IsBlacklisted(check *Check) bool {
+func (c *ConsulAlertClient) IsBlacklisted(check *consulapi.HealthCheck) bool {
 	blacklistExist := func() bool {
 		kvPairs, _, err := c.api.KV().List("consul-alerts/config/checks/blacklist/", nil)
 		return len(kvPairs) != 0 && err == nil
@@ -870,7 +870,7 @@ func (c *ConsulAlertClient) IsBlacklisted(check *Check) bool {
 }
 
 // GetChangeThreshold gets the node/service/check specific override for change threshold
-func (c *ConsulAlertClient) GetChangeThreshold(check *Check) int {
+func (c *ConsulAlertClient) GetChangeThreshold(check *consulapi.HealthCheck) int {
 	service := check.ServiceID
 	if service == "" {
 		service = "_"

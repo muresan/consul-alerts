@@ -1,14 +1,14 @@
 package notifier
 
 import (
-	"fmt"
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/http"
-	"html/template"
 
-	log "github.com/AcalephStorage/consul-alerts/Godeps/_workspace/src/github.com/Sirupsen/logrus"
+	log "github.com/Sirupsen/logrus"
 )
 
 type PrometheusNotifier struct {
@@ -123,8 +123,8 @@ func (notifier *PrometheusNotifier) Notify(messages Messages) bool {
 	// Channel receiver. Making sure to return the final result in bool
 	for i := 0; i < len(notifier.BaseURLs); i++ {
 		select {
-		case r := <- c:
-			if (! r) {
+		case r := <-c:
+			if !r {
 				return false
 			}
 		}

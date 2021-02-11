@@ -3,8 +3,11 @@ package consul
 import (
 	"time"
 
-	notifier "github.com/AcalephStorage/consul-alerts/notifier"
+	notifier "consul-alerts/notifier"
+	consulapi "github.com/hashicorp/consul/api"
 )
+
+type Check consulapi.HealthCheck
 
 // Event data from consul
 type Event struct {
@@ -16,17 +19,6 @@ type Event struct {
 	TagFilter     string
 	Version       uint
 	LTime         uint
-}
-
-type Check struct {
-	Node        string
-	CheckID     string
-	Name        string
-	Status      string
-	Notes       string
-	Output      string
-	ServiceID   string
-	ServiceName string
 }
 
 type ConsulAlertConfig struct {
@@ -50,7 +42,7 @@ type Status struct {
 	CurrentTimestamp time.Time
 	Pending          string
 	PendingTimestamp time.Time
-	HealthCheck      *Check
+	HealthCheck      *consulapi.HealthCheck
 	ForNotification  bool
 }
 
@@ -86,10 +78,10 @@ type Consul interface {
 
 	CheckChangeThreshold() int
 	UpdateCheckData()
-	NewAlerts() []Check
-	NewAlertsWithFilter(node string, service string, checkId string, statuses []string, ignoreBlacklist bool) []Check
+	NewAlerts() []consulapi.HealthCheck
+	NewAlertsWithFilter(node string, service string, checkId string, statuses []string, ignoreBlacklist bool) []consulapi.HealthCheck
 
-	IsBlacklisted(check *Check) bool
+	IsBlacklisted(check *consulapi.HealthCheck) bool
 
 	CustomNotifiers() map[string]string
 
@@ -180,7 +172,7 @@ func DefaultAlertConfig() *ConsulAlertConfig {
 		Enabled:     false,
 		ClusterName: "Consul-Alerts",
 	}
-    
+
 	ilert := &notifier.ILertNotifier{
 		Enabled:             false,
 		IncidentKeyTemplate: "{{.Node}}:{{.Service}}:{{.Check}}",
